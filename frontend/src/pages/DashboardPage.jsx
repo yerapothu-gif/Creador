@@ -268,6 +268,14 @@ export default function DashboardPage() {
               </button>
             )}
 
+            <Link
+              to="/bot"
+              className="btn btn-outline"
+              style={{ fontSize: "0.85rem", padding: "6px 12px" }}
+            >
+              Financial Assistant
+            </Link>
+
             <button
               onClick={logout}
               className="btn btn-ghost"

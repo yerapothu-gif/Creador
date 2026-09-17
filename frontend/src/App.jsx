@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import AdminPage from "./pages/AdminPage";
+import BotPage from "./pages/BotPage";
 
 import "./App.css";
 
@@ -24,6 +25,7 @@ export default function App() {
 
           {/* Protected — any authenticated user */}
           <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+          <Route path="/bot" element={<RequireAuth><BotPage /></RequireAuth>} />
 
           {/* Protected — admin only */}
           <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
