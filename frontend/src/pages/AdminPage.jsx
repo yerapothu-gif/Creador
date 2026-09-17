@@ -22,6 +22,18 @@ const LANGUAGES = [
   { code: "bn", label: "Bengali (বাংলা)" },
 ];
 
+const FORMATS = [
+  { key: "article", label: "Article", color: "#2DD4BF" },
+  { key: "video",   label: "Video",   color: "#F59E0B" },
+  { key: "quiz",    label: "Quiz",    color: "#A78BFA" },
+];
+
+const DIFFICULTIES = [
+  { key: "beginner",     label: "Beginner" },
+  { key: "intermediate", label: "Intermediate" },
+  { key: "advanced",     label: "Advanced" },
+];
+
 const INITIAL_FORM = {
   title: "",
   category: "loans",
@@ -29,6 +41,9 @@ const INITIAL_FORM = {
   mediaUrl: "",
   tags: "",
   language: "en",
+  format: "article",
+  sequence: 1,
+  difficulty: "beginner",
 };
 
 export default function AdminPage() {
@@ -136,6 +151,9 @@ export default function AdminPage() {
       mediaUrl: item.mediaUrl || "",
       tags: Array.isArray(item.tags) ? item.tags.join(", ") : "",
       language: item.language || "en",
+      format: item.format || "article",
+      sequence: item.sequence ?? 1,
+      difficulty: item.difficulty || "beginner",
     });
     setFormErrors({});
     setSubmitError("");
@@ -173,6 +191,9 @@ export default function AdminPage() {
         body: formData.body.trim(),
         mediaUrl: formData.mediaUrl.trim(),
         language: formData.language,
+        format: formData.format || "article",
+        sequence: parseInt(formData.sequence, 10) || 1,
+        difficulty: formData.difficulty || "beginner",
         tags: formData.tags
           .split(",")
           .map((t) => t.trim())
@@ -208,6 +229,9 @@ export default function AdminPage() {
         body: formData.body.trim(),
         mediaUrl: formData.mediaUrl.trim(),
         language: formData.language,
+        format: formData.format || "article",
+        sequence: parseInt(formData.sequence, 10) || 1,
+        difficulty: formData.difficulty || "beginner",
         tags: formData.tags
           .split(",")
           .map((t) => t.trim())
@@ -419,11 +443,30 @@ export default function AdminPage() {
               return (
                 <article className="content-card" key={item._id}>
                   <div className="content-card-top">
+                    {/* Row 1: Category + Language + Format badges */}
                     <div className="content-badges">
                       <span className={`badge-category badge-${item.category}`}>
                         {catObj?.icon} {catObj?.label || item.category}
                       </span>
+                      {item.format && (
+                        <span
+                          className="badge-format"
+                          data-format={item.format}
+                        >
+                          {item.format === "video" ? "▶ Video" : item.format === "quiz" ? "✎ Quiz" : "✦ Article"}
+                        </span>
+                      )}
                       <span className="badge-lang">{item.language || "en"}</span>
+                    </div>
+
+                    {/* Sequence + Difficulty row */}
+                    <div className="content-meta-row">
+                      <span className="meta-sequence">Day {item.sequence ?? 1}</span>
+                      {item.difficulty && (
+                        <span className="meta-difficulty" data-level={item.difficulty}>
+                          {item.difficulty.charAt(0).toUpperCase() + item.difficulty.slice(1)}
+                        </span>
+                      )}
                     </div>
 
                     <h2 className="content-card-title">{item.title}</h2>
@@ -575,6 +618,47 @@ export default function AdminPage() {
                           <option key={l.code} value={l.code}>
                             {l.label}
                           </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Format + Sequence + Difficulty row */}
+                  <div className="form-row form-row-three">
+                    <div>
+                      <label className="modal-input-label">Content Format</label>
+                      <select
+                        className="modal-select"
+                        value={formData.format}
+                        onChange={(e) => setFormData({ ...formData, format: e.target.value })}
+                      >
+                        {FORMATS.map((f) => (
+                          <option key={f.key} value={f.key}>{f.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="modal-input-label">Sequence (Day No.)</label>
+                      <input
+                        type="number"
+                        className="modal-input"
+                        min="1"
+                        max="30"
+                        value={formData.sequence}
+                        onChange={(e) => setFormData({ ...formData, sequence: e.target.value })}
+                        placeholder="1"
+                      />
+                      <div className="input-hint">Order in the learning plan</div>
+                    </div>
+                    <div>
+                      <label className="modal-input-label">Difficulty</label>
+                      <select
+                        className="modal-select"
+                        value={formData.difficulty}
+                        onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
+                      >
+                        {DIFFICULTIES.map((d) => (
+                          <option key={d.key} value={d.key}>{d.label}</option>
                         ))}
                       </select>
                     </div>
@@ -747,6 +831,47 @@ export default function AdminPage() {
                     </div>
                   </div>
 
+                  {/* Format + Sequence + Difficulty row */}
+                  <div className="form-row form-row-three">
+                    <div>
+                      <label className="modal-input-label">Content Format</label>
+                      <select
+                        className="modal-select"
+                        value={formData.format}
+                        onChange={(e) => setFormData({ ...formData, format: e.target.value })}
+                      >
+                        {FORMATS.map((f) => (
+                          <option key={f.key} value={f.key}>{f.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="modal-input-label">Sequence (Day No.)</label>
+                      <input
+                        type="number"
+                        className="modal-input"
+                        min="1"
+                        max="30"
+                        value={formData.sequence}
+                        onChange={(e) => setFormData({ ...formData, sequence: e.target.value })}
+                        placeholder="1"
+                      />
+                      <div className="input-hint">Order in the learning plan</div>
+                    </div>
+                    <div>
+                      <label className="modal-input-label">Difficulty</label>
+                      <select
+                        className="modal-select"
+                        value={formData.difficulty}
+                        onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
+                      >
+                        {DIFFICULTIES.map((d) => (
+                          <option key={d.key} value={d.key}>{d.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="modal-input-label">Media / Reference URL</label>
                     <input
@@ -908,12 +1033,25 @@ export default function AdminPage() {
             </div>
 
             <div className="modal-body">
-              <div className="content-badges" style={{ marginBottom: "16px" }}>
+              <div className="content-badges" style={{ marginBottom: "8px" }}>
                 <span className={`badge-category badge-${previewItem.category}`}>
                   {CATEGORIES.find((c) => c.key === previewItem.category)?.icon}{" "}
                   {CATEGORIES.find((c) => c.key === previewItem.category)?.label || previewItem.category}
                 </span>
+                {previewItem.format && (
+                  <span className="badge-format" data-format={previewItem.format}>
+                    {previewItem.format === "video" ? "▶ Video" : previewItem.format === "quiz" ? "✎ Quiz" : "✦ Article"}
+                  </span>
+                )}
                 <span className="badge-lang">{previewItem.language || "en"}</span>
+              </div>
+              <div className="content-meta-row" style={{ marginBottom: "16px" }}>
+                <span className="meta-sequence">Day {previewItem.sequence ?? 1}</span>
+                {previewItem.difficulty && (
+                  <span className="meta-difficulty" data-level={previewItem.difficulty}>
+                    {previewItem.difficulty.charAt(0).toUpperCase() + previewItem.difficulty.slice(1)}
+                  </span>
+                )}
               </div>
 
               <h2 style={{ fontSize: "1.4rem", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>

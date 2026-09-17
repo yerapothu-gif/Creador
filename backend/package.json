@@ -9,6 +9,7 @@
     "seed": "node src/seeds/seedContent.js",
     "create-admin": "node src/seeds/createAdmin.js",
     "test:content": "node test-content-admin.js",
+    "test:goal": "node test-goal-learning.js",
     "test": "node test-auth-flow.js"
   },
   "keywords": [],

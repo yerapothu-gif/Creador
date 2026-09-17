@@ -42,6 +42,20 @@ const contentItemSchema = new mongoose.Schema(
       default: "en",
       trim: true,
     },
+    format: {
+      type: String,
+      enum: ["article", "video", "quiz"],
+      default: "article",
+    },
+    sequence: {
+      type: Number,
+      default: 1,
+    },
+    difficulty: {
+      type: String,
+      enum: ["beginner", "intermediate", "advanced"],
+      default: "beginner",
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -51,8 +65,8 @@ const contentItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index for category filtering and search
-contentItemSchema.index({ category: 1, language: 1 });
+// Index for category filtering, sequencing and search
+contentItemSchema.index({ category: 1, sequence: 1, language: 1 });
 
 const ContentItem = mongoose.model("ContentItem", contentItemSchema);
 

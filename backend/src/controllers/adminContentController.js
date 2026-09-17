@@ -8,7 +8,7 @@ const { ContentItem, CATEGORIES } = require("../models/ContentItem");
  */
 async function createContent(req, res) {
   try {
-    const { title, body, category, tags, mediaUrl, language } = req.body;
+    const { title, body, category, tags, mediaUrl, language, format, sequence, difficulty } = req.body;
 
     if (!title || !body || !category) {
       return res.status(400).json({
@@ -28,6 +28,10 @@ async function createContent(req, res) {
         ? req.user.userId
         : undefined;
 
+    const parsedSequence = !isNaN(parseInt(sequence, 10)) ? parseInt(sequence, 10) : 1;
+    const validFormat = ["article", "video", "quiz"].includes(format) ? format : "article";
+    const validDifficulty = ["beginner", "intermediate", "advanced"].includes(difficulty) ? difficulty : "beginner";
+
     const item = await ContentItem.create({
       title: title.trim(),
       body: body.trim(),
@@ -35,6 +39,9 @@ async function createContent(req, res) {
       tags: Array.isArray(tags) ? tags : [],
       mediaUrl: mediaUrl ? mediaUrl.trim() : "",
       language: language ? language.trim() : "en",
+      format: validFormat,
+      sequence: parsedSequence,
+      difficulty: validDifficulty,
       createdBy,
     });
 
@@ -58,7 +65,7 @@ async function updateContent(req, res) {
       return res.status(404).json({ message: "Content item not found" });
     }
 
-    const { title, body, category, tags, mediaUrl, language } = req.body;
+    const { title, body, category, tags, mediaUrl, language, format, sequence, difficulty } = req.body;
 
     const updates = {};
     if (title !== undefined) updates.title = title.trim();
@@ -66,6 +73,9 @@ async function updateContent(req, res) {
     if (tags !== undefined) updates.tags = Array.isArray(tags) ? tags : [];
     if (mediaUrl !== undefined) updates.mediaUrl = mediaUrl.trim();
     if (language !== undefined) updates.language = language.trim();
+    if (format !== undefined && ["article", "video", "quiz"].includes(format)) updates.format = format;
+    if (sequence !== undefined && !isNaN(parseInt(sequence, 10))) updates.sequence = parseInt(sequence, 10);
+    if (difficulty !== undefined && ["beginner", "intermediate", "advanced"].includes(difficulty)) updates.difficulty = difficulty;
 
     if (category !== undefined) {
       const normalizedCategory = category.toLowerCase().trim();

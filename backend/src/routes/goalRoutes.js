@@ -1,11 +1,23 @@
 const express = require("express");
 const { requireAuth } = require("../middleware/auth");
+const {
+  createGoal,
+  getMyGoal,
+  completeModule,
+} = require("../controllers/goalController");
 
 const router = express.Router();
 
-// Stub for the auth proof plan. Person B replaces this with real Goal logic.
-router.get("/me", requireAuth, (req, res) => {
-  res.status(200).json({ goal: null });
-});
+// All goal routes require an authenticated user
+router.use(requireAuth);
+
+// POST /api/goals — create new goal with day-by-day modules referencing ContentItems
+router.post("/", createGoal);
+
+// GET /api/goals/me — get current active goal (populated) and user progress/streak
+router.get("/me", getMyGoal);
+
+// POST /api/goals/:id/modules/:day/complete — mark module completed, update streak & badges
+router.post("/:id/modules/:day/complete", completeModule);
 
 module.exports = router;
